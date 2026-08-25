@@ -84,12 +84,24 @@ export default function NewOrderPage() {
             />
           </div>
 
-          <Button variant="outline" className="w-full h-12 rounded-xl border-dashed border-2 border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50">
+          <Button variant="outline" className="w-full h-12 rounded-xl border-dashed border-2 border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50" onClick={() => handleSelectCustomer("Customer Baru", customerSearch || "-")}>
             <UserPlus className="w-5 h-5 mr-2" />
-            Customer Baru
+            Customer Baru {customerSearch && `(${customerSearch})`}
           </Button>
 
-          {customerSearch && (
+          {/* Dummy search results - simple implementation */}
+          {customerSearch && customerSearch.toLowerCase() !== "andi" && (
+             <Card className="cursor-pointer hover:border-indigo-600 transition-colors border-dashed" onClick={() => handleSelectCustomer("Customer Baru", customerSearch)}>
+               <CardContent className="p-4 flex items-center justify-between">
+                 <div>
+                   <div className="font-bold text-gray-900">Tambahkan sebagai baru</div>
+                   <div className="text-gray-500 text-sm">{customerSearch}</div>
+                 </div>
+               </CardContent>
+             </Card>
+          )}
+
+          {(!customerSearch || customerSearch.toLowerCase().includes("andi")) && (
              <Card className="cursor-pointer hover:border-indigo-600 transition-colors" onClick={() => handleSelectCustomer("Andi Pratama", "081288889999")}>
                <CardContent className="p-4 flex items-center justify-between">
                  <div>
@@ -166,6 +178,13 @@ export default function NewOrderPage() {
             {ADDONS.map(addon => (
               <label key={addon.id} className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-colors ${selectedAddons.includes(addon.id) ? 'border-indigo-600 bg-indigo-50/30' : 'border-gray-200 hover:bg-gray-50'}`}>
                 <div className="flex items-center gap-3">
+                  {/* Make the checkbox hidden but functional for screen readers, while clicking the label toggles the state via React */}
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={selectedAddons.includes(addon.id)}
+                    onChange={() => toggleAddon(addon.id)}
+                  />
                   <div className={`w-6 h-6 rounded-md flex items-center justify-center border ${selectedAddons.includes(addon.id) ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-300 bg-white'}`}>
                     {selectedAddons.includes(addon.id) && <Check className="w-4 h-4" strokeWidth={3} />}
                   </div>
