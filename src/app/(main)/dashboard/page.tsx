@@ -1,9 +1,18 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight, TrendingUp, Clock, CheckCircle2, ListOrdered, Calendar } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const urgentOrders = [
     { id: "LD-018", name: "Andi", service: "Cuci", weight: "4.2 kg", status: "WASHING" },
     { id: "LD-019", name: "Sari", service: "Setrika", weight: "2.0 kg", status: "IRONING" },
@@ -17,6 +26,12 @@ export default function DashboardPage() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
+
+  const currentDate = new Date().toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
@@ -33,7 +48,9 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-4 bg-white/10 px-4 py-2.5 rounded-xl backdrop-blur-sm">
              <Calendar className="w-5 h-5 text-indigo-100" />
-             <div className="text-sm font-medium">26 Agustus 2026</div>
+             <div className="text-sm font-medium">
+               {mounted ? currentDate : "26 Agustus 2026"}
+             </div>
           </div>
         </CardContent>
       </Card>

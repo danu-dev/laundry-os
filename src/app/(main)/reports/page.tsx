@@ -110,7 +110,7 @@ export default function ReportsPage() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                  <Tooltip cursor={{ fill: '#f3f4f6' }} formatter={(val: number) => [`${val} Order`, 'Total']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}/>
+                  <Tooltip cursor={{ fill: '#f3f4f6' }} formatter={(val: any) => [`${val} Order`, 'Total']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}/>
                   <Bar dataKey="count" fill="#4F46E5" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
