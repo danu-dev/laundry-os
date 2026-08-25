@@ -84,7 +84,17 @@ export default function NewOrderPage() {
             />
           </div>
 
-          <Button variant="outline" className="w-full h-12 rounded-xl border-dashed border-2 border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50" onClick={() => handleSelectCustomer("Customer Baru", customerSearch || "-")}>
+          <Button
+            variant="outline"
+            className="w-full h-12 rounded-xl border-dashed border-2 border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50"
+            onClick={() => {
+              if (!customerSearch.trim()) {
+                alert("Silakan isi nomor HP/nama terlebih dahulu untuk membuat customer baru.");
+                return;
+              }
+              handleSelectCustomer("Customer Baru", customerSearch || "-");
+            }}
+          >
             <UserPlus className="w-5 h-5 mr-2" />
             Customer Baru {customerSearch && `(${customerSearch})`}
           </Button>

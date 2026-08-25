@@ -76,13 +76,13 @@ export default function FinancePage() {
       </div>
 
       <Tabs defaultValue="expenses" className="w-full mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <TabsList className="bg-gray-100/50">
-            <TabsTrigger value="expenses">Expenses</TabsTrigger>
-            <TabsTrigger value="sales">Sales History</TabsTrigger>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-4">
+          <TabsList className="bg-gray-100/50 rounded-xl h-auto p-1 self-start">
+            <TabsTrigger value="expenses" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm py-2">Expenses</TabsTrigger>
+            <TabsTrigger value="sales" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm py-2">Sales History</TabsTrigger>
           </TabsList>
 
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm self-start sm:self-auto h-10 w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Pengeluaran
           </Button>

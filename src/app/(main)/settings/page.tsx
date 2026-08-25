@@ -72,12 +72,12 @@ export default function SettingsPage() {
 
         <TabsContent value="services" className="space-y-4 outline-none">
           <Card className="border-gray-200 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <CardTitle className="text-lg">Katalog Layanan</CardTitle>
                 <CardDescription>Atur daftar layanan dan harga dasar.</CardDescription>
               </div>
-              <Button variant="outline" size="sm" className="rounded-lg">Tambah Layanan</Button>
+              <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl border-indigo-200 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-50">Tambah Layanan</Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -100,7 +100,7 @@ export default function SettingsPage() {
                         <Label className="text-xs text-gray-500">Satuan</Label>
                         <Input defaultValue={service.unit} className="h-10 bg-white" />
                       </div>
-                      <Button variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-50 sm:mb-[2px] self-end sm:self-auto shrink-0 w-full sm:w-auto">Hapus</Button>
+                      <Button variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl sm:mb-[2px] self-end sm:self-auto shrink-0 w-full sm:w-auto">Hapus</Button>
                    </div>
                 ))}
               </div>
@@ -152,14 +152,14 @@ export default function SettingsPage() {
                 </div>
                 <Switch defaultChecked />
               </div>
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 gap-2">
                 <div className="space-y-0.5">
                   <Label className="text-base font-semibold text-gray-900">Ukuran Kertas</Label>
                   <p className="text-sm text-gray-500">Pilih lebar kertas thermal printer Bluetooth/USB Anda.</p>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="border-indigo-600 bg-indigo-50 text-indigo-700">58mm</Button>
-                  <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-50">80mm</Button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button variant="outline" className="flex-1 sm:flex-auto border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl">58mm</Button>
+                  <Button variant="outline" className="flex-1 sm:flex-auto border-gray-200 text-gray-600 hover:bg-gray-50 rounded-xl">80mm</Button>
                 </div>
               </div>
             </CardContent>
@@ -170,6 +170,7 @@ export default function SettingsPage() {
       {/* Mobile Sticky Save Button */}
       <div className="md:hidden fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-200 z-40">
          <Button onClick={handleSave} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-12 font-bold shadow-lg shadow-indigo-600/20">
+          <Save className="w-4 h-4 mr-2" />
           Simpan Perubahan
         </Button>
       </div>

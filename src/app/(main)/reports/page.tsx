@@ -98,12 +98,20 @@ export default function ReportsPage() {
           <CardContent>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueData} margin={{ top: 5, right: 0, bottom: 5, left: -20 }}>
+                <BarChart data={[
+                  { name: 'Mon', count: 12 },
+                  { name: 'Tue', count: 19 },
+                  { name: 'Wed', count: 15 },
+                  { name: 'Thu', count: 22 },
+                  { name: 'Fri', count: 28 },
+                  { name: 'Sat', count: 42 },
+                  { name: 'Sun', count: 34 },
+                ]} margin={{ top: 5, right: 0, bottom: 5, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                  <Tooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}/>
-                  <Bar dataKey="revenue" fill="#4F46E5" radius={[4, 4, 0, 0]} />
+                  <Tooltip cursor={{ fill: '#f3f4f6' }} formatter={(val: number) => [`${val} Order`, 'Total']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}/>
+                  <Bar dataKey="count" fill="#4F46E5" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
