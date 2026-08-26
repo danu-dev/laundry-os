@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   ListOrdered,
@@ -9,12 +9,28 @@ import {
   Settings,
   BarChart3,
   Box,
-  Plus
+  Plus,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/hooks/use-auth";
+import api from "@/lib/api";
 
 export function DesktopSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/logout");
+    } catch (error) {
+      console.error("Logout failed on server", error);
+    } finally {
+      logout();
+      router.push("/login");
+    }
+  };
 
   const links = [
     { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -67,14 +83,25 @@ export function DesktopSidebar() {
       </nav>
 
       <div className="p-4 border-t border-gray-100">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
-            B
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900 truncate max-w-[100px]">
+                {user?.name || 'User'}
+              </p>
+              <p className="text-xs text-gray-500 capitalize">{user?.role?.toLowerCase() || 'Role'}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">Budi Santoso</p>
-            <p className="text-xs text-gray-500">Owner</p>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            title="Keluar"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </aside>

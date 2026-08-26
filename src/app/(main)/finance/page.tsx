@@ -1,18 +1,54 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowUpRight, ArrowDownRight, Wallet, Receipt, TrendingUp } from "lucide-react";
+import { Plus, ArrowUpRight, ArrowDownRight, Wallet, Receipt, TrendingUp, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import api from "@/lib/api";
 
-const recentExpenses = [
-  { id: 1, category: "Supplies", desc: "Beli deterjen 20L", amount: 250000, date: "Hari ini" },
-  { id: 2, category: "Electricity", desc: "Token Listrik", amount: 500000, date: "Kemarin" },
-  { id: 3, category: "Other", desc: "Plastik kresek", amount: 45000, date: "23 Aug" },
-];
+interface FinanceSummary {
+  this_month_revenue: number;
+  growth_percentage: number;
+  cash_revenue: number;
+  transfer_revenue: number;
+  total_expenses: number;
+  estimated_net: number;
+}
+
+interface Expense {
+  id: number;
+  category: string;
+  note: string;
+  amount: number;
+  created_at: string;
+}
 
 export default function FinancePage() {
+  const [summary, setSummary] = useState<FinanceSummary | null>(null);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFinanceData = async () => {
+      try {
+        const [summaryRes, expensesRes] = await Promise.all([
+          api.get('/finance/summary'),
+          api.get('/expenses')
+        ]);
+        setSummary(summaryRes.data);
+        setExpenses(expensesRes.data.data || expensesRes.data);
+      } catch (error) {
+        console.error("Failed to fetch finance data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFinanceData();
+  }, []);
+
   const formatRupiah = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -20,6 +56,26 @@ export default function FinancePage() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) return "Hari ini";
+    if (date.toDateString() === yesterday.toDateString()) return "Kemarin";
+
+    return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 pb-24 md:pb-8">
@@ -33,10 +89,16 @@ export default function FinancePage() {
              <div className="flex justify-between items-start">
                <div>
                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Revenue (Bulan ini)</p>
-                 <div className="text-4xl font-black text-gray-900">{formatRupiah(14500000)}</div>
+                 <div className="text-4xl font-black text-gray-900">{formatRupiah(summary?.this_month_revenue || 0)}</div>
                  <div className="flex items-center gap-1 text-emerald-600 font-medium mt-2 text-sm">
-                   <ArrowUpRight className="w-4 h-4" />
-                   <span>+8.2% dari bulan lalu</span>
+                   {Number(summary?.growth_percentage) >= 0 ? (
+                     <ArrowUpRight className="w-4 h-4" />
+                   ) : (
+                     <ArrowDownRight className="w-4 h-4 text-red-500" />
+                   )}
+                   <span className={Number(summary?.growth_percentage) < 0 ? "text-red-500" : ""}>
+                     {Number(summary?.growth_percentage) > 0 ? '+' : ''}{summary?.growth_percentage || 0}% dari bulan lalu
+                   </span>
                  </div>
                </div>
                <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center">
@@ -47,11 +109,11 @@ export default function FinancePage() {
              <div className="mt-8 pt-6 border-t border-gray-100 flex gap-8">
                <div>
                  <p className="text-xs text-gray-500 mb-1">Cash</p>
-                 <p className="font-bold text-gray-900">{formatRupiah(4200000)}</p>
+                 <p className="font-bold text-gray-900">{formatRupiah(summary?.cash_revenue || 0)}</p>
                </div>
                <div>
                  <p className="text-xs text-gray-500 mb-1">Transfer/QRIS</p>
-                 <p className="font-bold text-gray-900">{formatRupiah(10300000)}</p>
+                 <p className="font-bold text-gray-900">{formatRupiah(summary?.transfer_revenue || 0)}</p>
                </div>
              </div>
           </CardContent>
@@ -61,7 +123,7 @@ export default function FinancePage() {
           <CardContent className="p-6 flex flex-col h-full justify-between">
             <div>
                <p className="text-sm font-medium text-indigo-200 uppercase tracking-wider mb-2">Estimated Net</p>
-               <div className="text-3xl font-black">{formatRupiah(8200000)}</div>
+               <div className="text-3xl font-black">{formatRupiah(summary?.estimated_net || 0)}</div>
                <p className="text-xs text-indigo-200 mt-2 flex items-center gap-1">
                  <AlertCircleIcon className="w-3 h-3" />
                  *Berdasarkan biaya yang tercatat
@@ -69,7 +131,7 @@ export default function FinancePage() {
             </div>
             <div className="mt-6 pt-4 border-t border-indigo-500/30">
                <p className="text-xs text-indigo-200 mb-1">Total Pengeluaran</p>
-               <p className="font-bold text-lg">{formatRupiah(6300000)}</p>
+               <p className="font-bold text-lg">{formatRupiah(summary?.total_expenses || 0)}</p>
             </div>
           </CardContent>
         </Card>
@@ -89,27 +151,33 @@ export default function FinancePage() {
         </div>
 
         <TabsContent value="expenses" className="space-y-4 outline-none">
-          {recentExpenses.map((expense) => (
-             <Card key={expense.id} className="border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">
-               <CardContent className="p-4 flex items-center justify-between">
-                 <div className="flex gap-4 items-center">
-                   <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-                     <Receipt className="w-5 h-5 text-red-500" />
+          {expenses.length === 0 ? (
+            <div className="p-8 text-center bg-gray-50 border border-gray-200 rounded-xl">
+              <p className="text-gray-500 font-medium">Belum ada pengeluaran tercatat.</p>
+            </div>
+          ) : (
+            expenses.map((expense) => (
+               <Card key={expense.id} className="border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">
+                 <CardContent className="p-4 flex items-center justify-between">
+                   <div className="flex gap-4 items-center">
+                     <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
+                       <Receipt className="w-5 h-5 text-red-500" />
+                     </div>
+                     <div>
+                       <p className="font-bold text-gray-900">{expense.note}</p>
+                       <p className="text-sm text-gray-500">{expense.category} • {formatDate(expense.created_at)}</p>
+                     </div>
                    </div>
-                   <div>
-                     <p className="font-bold text-gray-900">{expense.desc}</p>
-                     <p className="text-sm text-gray-500">{expense.category} • {expense.date}</p>
+                   <div className="text-right">
+                     <p className="font-bold text-gray-900 text-lg flex items-center gap-1">
+                       <ArrowDownRight className="w-4 h-4 text-red-500" />
+                       {formatRupiah(Number(expense.amount))}
+                     </p>
                    </div>
-                 </div>
-                 <div className="text-right">
-                   <p className="font-bold text-gray-900 text-lg flex items-center gap-1">
-                     <ArrowDownRight className="w-4 h-4 text-red-500" />
-                     {formatRupiah(expense.amount)}
-                   </p>
-                 </div>
-               </CardContent>
-             </Card>
-          ))}
+                 </CardContent>
+               </Card>
+            ))
+          )}
         </TabsContent>
         <TabsContent value="sales" className="outline-none">
            <div className="text-center py-12 text-gray-500 bg-white border border-gray-200 rounded-xl">
