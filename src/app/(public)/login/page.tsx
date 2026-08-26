@@ -29,7 +29,8 @@ export default function LoginPage() {
 
       const response = await api.post("/auth/login", { email, password });
 
-      const { access_token, user } = response.data;
+      const access_token = response.data?.data?.token || response.data?.access_token;
+      const user = response.data?.data?.user || response.data?.user;
 
       if (access_token) {
         Cookies.set("token", access_token, { expires: 7 }); // expires in 7 days
