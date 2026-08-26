@@ -7,7 +7,7 @@ const api = axios.create({
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // For Sanctum CSRF cookies if needed
+  // withCredentials: true, // For Sanctum CSRF cookies if needed
 });
 
 // Request interceptor to add token
